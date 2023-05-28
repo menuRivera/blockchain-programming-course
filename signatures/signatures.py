@@ -39,10 +39,10 @@ def verify(message:bytes, sig:bytes, public:RSAPublicKey) -> bool:
                 )
         return True
     except InvalidSignature:
-        print('Invalid signature')
+        # print('Invalid signature')
         return False
     except:
-        print('Generic error')
+        # print('Generic error')
         return False
 
 if __name__ == "__main__":
