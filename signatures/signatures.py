@@ -4,16 +4,21 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey, RSAPrivateKey
 from cryptography.hazmat.backends import default_backend
 from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import serialization
 
-
-def generate_keys() -> Tuple[RSAPrivateKey, RSAPublicKey]: 
-    _pr = rsa.generate_private_key(
-                public_exponent=65537,
-                key_size=2048,
-                backend=default_backend()
-            )
-    _pu = _pr.public_key()
-    return _pr, _pu
+def generate_keys() -> Tuple[RSAPrivateKey, bytes]: 
+    private = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048,
+       backend=default_backend()
+    )    
+    public = private.public_key()
+    # serialize public key
+    pu_ser = public.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )    
+    return private, pu_ser
 
 def sign(message:bytes, private:RSAPrivateKey) -> bytes:
     _sig = private.sign(
@@ -26,44 +31,51 @@ def sign(message:bytes, private:RSAPrivateKey) -> bytes:
             )
     return _sig
 
-def verify(message:bytes, sig:bytes, public:RSAPublicKey) -> bool:
+def verify(message:bytes, sig:bytes, pu_ser:bytes) -> bool:
+    # deserialize public key
+    public = serialization.load_pem_public_key(
+        pu_ser,
+        backend=default_backend()
+    )
+
+    # message = bytes(str(message), 'utf-8')
     try:
-        public.verify(
-                   signature=sig,
-                   data=message,
-                   padding=padding.PSS(
-                           mgf=padding.MGF1(hashes.SHA256()),
-                           salt_length=padding.PSS.MAX_LENGTH
-                       ),
-                   algorithm=hashes.SHA256()
-                )
-        return True
+        if isinstance(public, RSAPublicKey):
+            public.verify(
+                signature=sig,
+                data=message,
+                padding=padding.PSS(
+                      mgf=padding.MGF1(hashes.SHA256()),
+                      salt_length=padding.PSS.MAX_LENGTH
+                ),
+                algorithm=hashes.SHA256()
+            )
+            return True
+        else:
+            print("Not RSAPublicKey :(")
+            return False
     except InvalidSignature:
-        # print('Invalid signature')
         return False
     except:
-        # print('Generic error')
+        print("Error executing public_key.verify")
         return False
 
 if __name__ == "__main__":
-    pr, pu = generate_keys()
-    message:bytes = b'This is a message'
+    pr, pu_ser = generate_keys()
+    message:bytes = b"This is a message"
     sig:bytes = sign(message, pr)
 
-    # this will be correct
-    print('test 1')
-    if verify(message, sig, pu):
+    # this should be correct
+    if verify(message, sig, pu_ser):
         print('Correct')
     else:
         print('Incorrect')
-    print('\n')
 
-    pr2, pu2 = generate_keys()
+    pr2, pu2_ser = generate_keys()
 
-    print('test 2')
-    # This will be incorrect
-    if verify(message, sig, pu2):
-        print('Correct')
-    else:
+    # This should be incorrect
+    if verify(message, sig, pu2_ser):
         print('Incorrect')
+    else:
+        print('Correct')
     
