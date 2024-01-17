@@ -1,7 +1,3 @@
-# The next two lines are for adding the parent directory in the pythonpath
-from site import addsitedir
-addsitedir('..')
-
 import signatures
 
 class Tx:

@@ -1,9 +1,4 @@
-# The next two lines are for adding the parent directory in the pythonpath
-from site import addsitedir
-addsitedir('..')
-
 import pickle
-# from blockchain.blockchain import CBlock
 from blockchain import CBlock
 import signatures
 from signatures import sign, verify
@@ -38,11 +33,11 @@ if __name__ == "__main__":
     # is correct
     # print(Tx1.is_valid())
 
-    savefile = open("tx.dat", "wb")
+    savefile = open("dumps/tx.dat", "wb")
     pickle.dump(Tx1, savefile)
     savefile.close()
 
-    loadfile = open("tx.dat", "rb")
+    loadfile = open("dumps/tx.dat", "rb")
     loaded_tx = pickle.load(loadfile)
 
     # is correct
@@ -80,11 +75,11 @@ if __name__ == "__main__":
     # B1.is_valid()
     # root.is_valid()
 
-    savefile = open('block.dat', 'wb')
+    savefile = open('dumps/block.dat', 'wb')
     pickle.dump(B1, savefile)
     savefile.close()
 
-    loadfile = open('block.dat', 'rb')
+    loadfile = open('dumps/block.dat', 'rb')
     load_B1 = pickle.load(loadfile)
 
     load_B1.is_valid()
