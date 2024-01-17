@@ -31,6 +31,10 @@ class CBlock:
         if self.prevHash: digest.update(self.prevHash)
         return digest.finalize()
 
+    def is_valid(self):
+        if self.prevHash == None: return True
+        return self.prevBlock and self.prevBlock.computeHash() == self.prevHash
+
 if __name__ == "__main__":
     root = CBlock("Root block", None)
     b1 = CBlock("I am block 1", root)

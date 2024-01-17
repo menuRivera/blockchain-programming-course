@@ -73,6 +73,18 @@ class Tx:
         data.append(self.reqd)
         return bytes(str(data), 'utf-8')
 
+    def __repr__(self) -> str:
+        string = "INPUTS:" 
+        for address, amount in self.inputs:
+            string = string + str(amount) + "from" + str(address)
+        string = string + "OUTPUTS:"
+        for address, amount in self.outputs:
+            string = string + str(amount) + "to" + str(address)
+        string = string + "REQUIRED_SIGNATURES:"
+        for address in self.reqd:
+            string = string + str(address)
+        return string
+
 if __name__ == "__main__":
     pr1, pu1 = signatures.generate_keys()
     pr2, pu2 = signatures.generate_keys()
