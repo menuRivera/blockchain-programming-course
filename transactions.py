@@ -2,7 +2,7 @@
 from site import addsitedir
 addsitedir('..')
 
-import signatures.signatures as signatures
+import signatures
 
 class Tx:
     inputs = []

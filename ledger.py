@@ -3,10 +3,11 @@ from site import addsitedir
 addsitedir('..')
 
 import pickle
-from blockchain.blockchain import CBlock
-import signatures.signatures as signatures
-from signatures.signatures import sign, verify
-from transactions.transactions import Tx
+# from blockchain.blockchain import CBlock
+from blockchain import CBlock
+import signatures
+from signatures import sign, verify
+from transactions import Tx
 
 class TxBlock(CBlock): 
     def __init__(self, prevBlock):
